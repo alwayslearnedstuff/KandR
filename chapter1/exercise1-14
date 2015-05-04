@@ -1,0 +1,35 @@
+/*Exercise 1-14. Write a program to print a histogram of the frequencies of different characters in its input.  
+
+Following email to K, changed numchars[c-'0'] to numchars[c]
+*/
+
+#include <stdio.h>
+
+int main(void) {
+
+//int max=0;  //for max word length for vertical histogram
+int c, i;
+int numchars[128];  //represents up to 75 different characters
+c=i=0;
+
+for (i=0; i<128; i++){		//ASCII characters: goal match c to ascii char
+	numchars[i] = 0;  		//initializes all to 0
+}
+
+while((c=getchar()) != EOF){
+	numchars[c]++;
+}
+
+//print horizontal histogram
+for (i=0; i<128; i++){
+	printf("%3d| %c| ", i, i);
+	if(numchars[i]>0){
+  		while(numchars[i]>0){
+	  		printf("*"); 
+			numchars[i]--;
+		}
+	}
+printf("\n");
+}
+return 0;
+}
