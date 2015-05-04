@@ -1,0 +1,89 @@
+/*
+Exercise 1-11. How would you test the word count program (counts lines, words, characters)? What kinds of input are most
+likely to uncover bugs if there are any? 
+*/
+
+//This program works. Only issue is it counts \n and -1 as 3 characters total. 
+//Need to not count \n as characters. 
+//input that could cause bugs? My guess are certain lower values in ASCII table.
+//Testing program with various input.
+
+
+#include <stdio.h>
+
+int main(void) {
+
+int c, nl, nw, nc, pc;
+nl=nw=nc=pc=0;
+
+while ((c=getchar())!=EOF){
+	nc++;
+	printf("This is nc char: %d\n",c);
+	pc=c;
+	
+	if(c=='\n')
+		nl++;
+	
+	if ((pc==' ' || pc=='\t' || pc=='\b' || pc=='\n')&&
+	    (c!=' ' || c!='\t' || c!='\b' || c!='\n'))
+		nw++;
+	
+}
+
+printf("There are %d words.\n",nw);
+printf("There are %d new lines and %d characters.",nl,nc);
+
+	return 0;
+}
+
+
+/*
+//Trying a version here that runs with previous vs current character but not
+//the IN/OUT state. Below is buggy and trying to debug. My conditional 
+//statements aren't super clear, so I'm reworking. Part of prob was testing
+//first character as separate conditional since no previous character, but
+//i think it can be done more elegantly... working on it.
+
+#include <stdio.h>
+
+#define IN  1   //in word
+#define OUT 0   //not in a word
+
+int main(void) {
+
+int c, nl, nw, nc, state, pc;
+nl=nw=nc=pc=0;
+
+while ((c=getchar())!=EOF){
+	nc++;
+	
+	if(c=='\n')
+		nl++;
+	
+	if(pc==c && nc==1){
+		if(c==' ' || c=='\t' || c=='\b' || c=='\n'){
+		pc=c;
+		}
+	else
+	nw++;
+	}
+	
+	if ((c!=pc && (pc==' ' || pc=='\t' || pc=='\b' || pc=='\n'))
+		nw++;
+	
+	if (c==' ' || c=='\t' || c=='\b' || c=='\n'){
+
+		//nw++;
+	}
+	
+
+	
+	pc=c;
+}
+
+printf("There are %d words.\n",nw);
+printf("There are %d new lines and %d characters.",nl,nc);
+
+	return 0;
+}
+*/
