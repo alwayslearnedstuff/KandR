@@ -1,0 +1,22 @@
+//Exercise 1-12. Write a program that prints its input one word per line. 
+
+
+#include <stdio.h>
+
+int main(void) {
+	int c, pc; 
+	c=pc=0;
+	
+	while((c=getchar())!=EOF){
+		putchar(c);
+		
+	if((c!=pc)&&(c==' '||c=='\t')) //basically, if c is blank and pc is a letter
+		printf("\n");
+	
+	else if(c=='\n'); //this is so that we don't get a double line break
+	
+	pc=c; //assign c to pc at end of calculations
+	}
+	
+	return 0;
+}
