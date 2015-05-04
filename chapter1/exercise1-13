@@ -1,0 +1,172 @@
+/*
+Exercise 1-13. Write a program to print a histogram of the lengths of words in its input. It is easy to draw the histogram with the bars horizontal; a vertical orientation is more challenging. 
+*/
+
+/*
+It's 1am on 3/14/15 and after two weeks working on this, I got the first part to pretty much work but it fails on two accounts:
+1) won't skip ' ', \t, \n at beginning, and 
+2) won't count last word b/c skips out before EOF
+
+In bed not sleeping at 1:30am, I discovered diff way to do this using increment and decrement as going char by char. Would solve prob of not counting last word when EOF hits before re-enters the loop. The other thing I realized at 1:35 or so am (:-) was that I wanted to name the variables with real names as is common nowadays but was uncommon in '78 when KR wrote this. I suspect they wanted to minimize memory usage, so they used lots of short variables like c, pc, IN, OUT and stuff like that. I wanted this to represent the ideas and thought process, thus wordlength represents the length of the current word. numwords[wordlength] represents the number of words each of length wordlength. Capiche? 
+
+On 3/14 at 10am, solved 2 probs above and got it to work, below. Main issue was I wasn't resetting wordlength to 0 so it kept incrementing. Decided to use int c to represent current char, and pc representing previous char instead of KR's IN/OUT solution Why? It's just how I think. It's simpler to me to think of it as "if current char is blank/nonblank then do this else and so forth.  I've looked at a number of solutions online from people. I did this without consulting a solution as I was working. 
+According to K&R, || breaks at first true statement, but this particular compiler seems to have trouble with ||. It doesn't break and seems to treat as && or some other logic structure. That's why it's not if ' ' || '\n' || '\t'
+*/
+
+
+#include <stdio.h>
+
+int main(void) {
+
+int max=0;  //for max word length
+int c, i, pc, wordlength;
+int numwords[30];  //represents wordlengths up to 30 characters
+c=pc=i=wordlength=0;
+
+for (i=0; i<30; i++){
+	numwords[i] = 0;  //initializes all h's to 0
+}
+
+//Utilizes []++ for each char and []-- for previous
+//from beginning if start with spaces, \n, \t
+/*
+	numwords[wordlength]++ with every non-blank character. if c non-blank and pc
+	nonblank, also numwords[wordlength]--
+*/
+	
+	//possibilities: ' 'char || charchar || char' ' || ' 'char' '
+while((c=getchar()) != EOF){
+	if(c != ' ' && c!='\n' && c!='\t'){  //char
+		wordlength++; //length of word
+		numwords[wordlength]++; //increment # words at this wordlength
+		
+		if(pc != ' ' && pc!='\n' && pc!='\t' && pc!='0') //charchar
+			numwords[wordlength-1]--;
+		
+		if(wordlength>wordlength-1)   //calculate max wordlength for vert. hist. 
+			max=wordlength;
+			
+		//printf("word length: %d c: %c\n",wordlength, c); //TEST
+	}
+	
+	if(pc != '0' && c == ' ' || c=='\n' || c=='\t')
+		wordlength=0;	//need to reset wordlength when entering blank space
+
+	pc=c; //store current char in previous char
+
+}
+
+
+	/*TEST: print lengths of each array value
+	for (i=0; i<30; i++){
+		printf("numwords[%d] = %d\n", i, numwords[i]);
+	}
+	*/
+	
+	/* HORIZONTAL HISTOGRAM */
+	printf("Horizontal Histogram\n");
+	/*print subtitle bar 30 chars wide*/
+	char underscore='_';
+	for (i=0; i<30; i++){
+		printf("%c", underscore);
+	}
+	printf("\n\nWord length\n");
+	
+	for (i=1; i<=29; i++){   //BuG: 30 prints an asterisk...how come? 
+		int j; char asterisk='*';
+		printf("%5d| ", i);		//EVEN WIDTHs
+		for (j=0; j<numwords[i]; j++){
+			printf("%2c", asterisk);
+		}
+		
+		printf("\n");
+	}
+
+	/* VERTICAL HISTOGRAM */	
+	/*Working on this. Challenge is need to find the longest word because that 
+	will be the highest point of the histogram since it's effectively built 
+	"backwards": starting from top line and building down... To know how high 
+	it goes, you need to know what the tallest line is and then have everything 
+	count up to that tallest line. 
+	Then decrement start from highest matching each number along way.
+	*/
+
+	/*
+	//find max number for the height
+	//this is bad code--realized after 15 mins this calculates largest value in
+	//array indices, which I only stored as # of OCCURRENCES--not lengths of 
+	//words. So, max is calculated above in the letter processing function
+	/*
+	<BAD CODE>
+	for (i=0; i<30; i++)
+		if(numwords[i]>max)	
+			max=numwords[i];
+	printf("%d\n", max);
+	</BAD CODE>
+	/*
+	
+	printf("\n\nVertical Histogram\n");
+	/*print subtitle bar 30 chars wide*/
+  	
+	for (i=0; i<30; i++){
+		printf("%c", underscore);
+	}
+	
+	printf("\n\n# of times\n");
+			
+	for (i=max; i>=1; i--){ //each i will be in numword[i] then print asterisks
+		printf("%12d|", i);
+		
+		int j; char asterisk='*';
+			for (j=0; j<30; j++){
+				if(numwords[j]>=i)
+					printf("%2c", asterisk);
+				else
+					printf("  ");
+			}
+		printf("\n");
+	}
+			printf("             ");
+	//Print bottom line
+	for(i=0;i<30;i++){
+		printf("--");
+	}
+	printf("\n             ");
+	for(i=1;i<30;i++){
+		printf("%2d",i);
+	}
+	printf("\n                  # of occurrences");
+	return 0;
+}
+
+	/*
+	//2nd pass, earlier draft
+	//this kept adding each character without effectively resetting with each 
+	//new word. but it did count at start of new word
+		if(c != ' ' && c!='\n' && c!='\t'){
+		wordlength++; //length of word
+		printf("word length: %d c: %c\n",wordlength, c); //just to show input
+		numwords[wordlength]++; //increment # words at this wordlength
+		if(pc != ' ' && pc!='\n'&& pc!='\t')
+			numwords[wordlength-1]--;
+	}
+	
+	//1st passthis was a false start based on compiler doing poor job with ||
+	if(c==' '&&numwords[i]==){
+		h[e]++;
+		e=0;  //reset to 0 at end each word or if space (like at beginng file)
+	}
+	
+	else if(c=='\n'){
+		h[e]++;
+		e=0;  //reset to 0 at end each word or if space (like at beginng file)
+	}
+	
+	else if(c=='\t'){
+		h[e]++;
+		e=0;  //reset to 0 at end each word or if space (like at beginng file)
+	}
+	
+	else
+	    h[e]++;
+	    */
